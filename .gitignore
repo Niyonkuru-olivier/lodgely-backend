@@ -1,0 +1,10 @@
+.vercel
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+*.log
+npm-debug.log*
+coverage/
+.DS_Store
