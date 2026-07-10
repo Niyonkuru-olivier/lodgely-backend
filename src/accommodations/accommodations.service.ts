@@ -14,45 +14,50 @@ export class AccommodationsService {
     capacity?: string;
     availableOnly?: string;
   }) {
-    const where: any = {};
+    try {
+      const where: any = {};
 
-    if (filters.search) {
-      where.OR = [
-        { title: { contains: filters.search, mode: 'insensitive' } },
-        { description: { contains: filters.search, mode: 'insensitive' } },
-      ];
-    }
-
-    if (filters.location) {
-      where.location = { contains: filters.location, mode: 'insensitive' };
-    }
-
-    if (filters.minPrice || filters.maxPrice) {
-      where.price = {};
-      if (filters.minPrice) {
-        where.price.gte = parseFloat(filters.minPrice);
+      if (filters.search) {
+        where.OR = [
+          { title: { contains: filters.search, mode: 'insensitive' } },
+          { description: { contains: filters.search, mode: 'insensitive' } },
+        ];
       }
-      if (filters.maxPrice) {
-        where.price.lte = parseFloat(filters.maxPrice);
+
+      if (filters.location) {
+        where.location = { contains: filters.location, mode: 'insensitive' };
       }
-    }
 
-    if (filters.type) {
-      where.type = { equals: filters.type, mode: 'insensitive' };
-    }
+      if (filters.minPrice || filters.maxPrice) {
+        where.price = {};
+        if (filters.minPrice) {
+          where.price.gte = parseFloat(filters.minPrice);
+        }
+        if (filters.maxPrice) {
+          where.price.lte = parseFloat(filters.maxPrice);
+        }
+      }
 
-    if (filters.capacity) {
-      where.capacity = { gte: parseInt(filters.capacity, 10) };
-    }
+      if (filters.type) {
+        where.type = { equals: filters.type, mode: 'insensitive' };
+      }
 
-    if (filters.availableOnly === 'true') {
-      where.availability = true;
-    }
+      if (filters.capacity) {
+        where.capacity = { gte: parseInt(filters.capacity, 10) };
+      }
 
-    return this.prisma.accommodation.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-    });
+      if (filters.availableOnly === 'true') {
+        where.availability = true;
+      }
+
+      return this.prisma.accommodation.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+      });
+    } catch (error) {
+      console.error('Error fetching accommodations:', error);
+      throw error;
+    }
   }
 
   async findOne(id: number) {
