@@ -6,8 +6,17 @@ import * as bcrypt from 'bcrypt';
 
 dotenv.config();
 
+const rawConnectionString = process.env.DATABASE_URL;
+if (!rawConnectionString) {
+  throw new Error('DATABASE_URL environment variable is not set');
+}
+const connectionString = rawConnectionString.split('?')[0];
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:Da1wi2d$@localhost:5432/lodgely?schema=public',
+  connectionString,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
