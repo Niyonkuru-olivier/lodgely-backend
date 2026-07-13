@@ -38,6 +38,7 @@ Add these in the "Environment" section:
 | `SMTP_PORT` | `587` |
 | `SMTP_USER` | Your Gmail address |
 | `SMTP_PASS` | Your Gmail app password |
+| `FRONTEND_URL` | Your Vercel frontend URL (e.g. `https://lodgely.vercel.app`) |
 | `PORT` | `5000` |
 
 ### 4. Deploy

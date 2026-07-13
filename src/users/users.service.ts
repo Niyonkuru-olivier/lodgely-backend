@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
+import { normalizeEmail } from '../common/utils/email.util';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -38,13 +39,14 @@ export class UsersService {
   }
 
   async create(data: { email: string; password: string; name: string; role?: string }) {
-    const existing = await this.prisma.user.findUnique({ where: { email: data.email } });
+    const email = normalizeEmail(data.email);
+    const existing = await this.prisma.user.findUnique({ where: { email } });
     if (existing) throw new ConflictException('Email already registered');
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
     const user = await this.prisma.user.create({
       data: {
-        email: data.email,
+        email,
         password: hashedPassword,
         name: data.name,
         role: data.role || 'user',
@@ -58,7 +60,7 @@ export class UsersService {
     await this.findOne(id); // throws if not found
 
     const updateData: any = {};
-    if (data.email) updateData.email = data.email;
+    if (data.email) updateData.email = normalizeEmail(data.email);
     if (data.name) updateData.name = data.name;
     if (data.role) updateData.role = data.role;
     if (data.password) {

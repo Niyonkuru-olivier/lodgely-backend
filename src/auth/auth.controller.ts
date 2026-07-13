@@ -1,7 +1,16 @@
-import { Controller, Post, Get, Body, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  UseGuards,
+  Request,
+  BadRequestException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { PasswordResetService } from './password-reset.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { isValidEmail, normalizeEmail } from '../common/utils/email.util';
 
 @Controller('auth')
 export class AuthController {
@@ -21,8 +30,17 @@ export class AuthController {
   }
 
   @Post('forgot-password')
-  async forgotPassword(@Body() body: { email: string }) {
-    return this.passwordResetService.forgotPassword(body.email);
+  async forgotPassword(@Body() body: { email?: string }) {
+    if (!body?.email?.trim()) {
+      throw new BadRequestException('Email is required');
+    }
+
+    const email = normalizeEmail(body.email);
+    if (!isValidEmail(email)) {
+      throw new BadRequestException('Please provide a valid email address');
+    }
+
+    return this.passwordResetService.forgotPassword(email);
   }
 
   @Post('reset-password')
