@@ -46,11 +46,14 @@ export class PasswordResetService {
       },
     });
 
-    const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:3000').replace(
-      /\/$/,
-      '',
-    );
+    const frontendUrl = (
+      process.env.FRONTEND_URL ||
+      (isProduction
+        ? 'https://frontend-lodgely.vercel.app'
+        : 'http://localhost:3000')
+    ).replace(/\/$/, '');
     const resetUrl = `${frontendUrl}/reset-password?token=${rawToken}`;
+    this.logger.log(`Password reset link base: ${frontendUrl}`);
 
     this.logger.log(`Password reset requested for ${email}`);
 
@@ -143,55 +146,57 @@ export class PasswordResetService {
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Password Reset</title>
+          <title>Reset your Lodgely password</title>
         </head>
-        <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
-          <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 20px;">
+        <body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background-color: #eef3f1;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #eef3f1; padding: 28px 16px;">
             <tr>
               <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 12px 40px rgba(12, 20, 18, 0.08);">
                   <tr>
-                    <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; text-align: center;">
-                      <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: bold;">Password Reset</h1>
+                    <td style="background-color: #0c1412; padding: 36px 28px; text-align: center;">
+                      <div style="display: inline-block; width: 42px; height: 42px; line-height: 42px; border-radius: 12px; background-color: #2f8f6b; color: #ffffff; font-size: 20px; font-weight: bold;">L</div>
+                      <h1 style="color: #ffffff; margin: 16px 0 0; font-size: 26px; font-weight: bold; letter-spacing: -0.02em;">Lodgely</h1>
+                      <p style="color: #8eaaa0; margin: 8px 0 0; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;">Password reset</p>
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding: 40px 30px;">
-                      <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+                    <td style="padding: 36px 30px;">
+                      <p style="color: #1d2b27; font-size: 16px; line-height: 1.6; margin: 0 0 16px;">
                         Hello,
                       </p>
-                      <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
-                        You recently requested to reset your password for your Lodgely account. Click the button below to set a new password:
+                      <p style="color: #3d524b; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
+                        You requested a new password for your Lodgely account. Use the button below to choose one.
                       </p>
-                      <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
+                      <table width="100%" cellpadding="0" cellspacing="0" style="margin: 8px 0 28px;">
                         <tr>
                           <td align="center">
-                            <a href="${resetUrl}" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 6px; font-weight: bold; font-size: 16px;">
-                              Reset Password
+                            <a href="${resetUrl}" style="display: inline-block; background-color: #2f8f6b; color: #ffffff; text-decoration: none; padding: 14px 36px; border-radius: 12px; font-weight: bold; font-size: 15px;">
+                              Set new password
                             </a>
                           </td>
                         </tr>
                       </table>
-                      <p style="color: #666666; font-size: 14px; line-height: 1.6; margin: 20px 0;">
-                        Or copy and paste this link into your browser:
+                      <p style="color: #6b8178; font-size: 13px; line-height: 1.6; margin: 0 0 8px;">
+                        Or paste this link into your browser:
                       </p>
-                      <p style="color: #667eea; font-size: 13px; line-height: 1.6; margin: 0 0 20px; word-break: break-all;">
+                      <p style="color: #2f8f6b; font-size: 12px; line-height: 1.6; margin: 0 0 24px; word-break: break-all;">
                         ${resetUrl}
                       </p>
-                      <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px;">
-                        <p style="color: #856404; font-size: 14px; line-height: 1.6; margin: 0;">
+                      <div style="background-color: #f3f8f5; border-left: 4px solid #2f8f6b; padding: 14px 16px; border-radius: 8px;">
+                        <p style="color: #3d524b; font-size: 13px; line-height: 1.6; margin: 0;">
                           <strong>Important:</strong> This link expires on ${expiryTime}.
                         </p>
                       </div>
-                      <p style="color: #666666; font-size: 14px; line-height: 1.6; margin: 20px 0 0;">
-                        If you did not request a password reset, you can safely ignore this email.
+                      <p style="color: #6b8178; font-size: 13px; line-height: 1.6; margin: 24px 0 0;">
+                        If you did not request this, you can ignore this email.
                       </p>
                     </td>
                   </tr>
                   <tr>
-                    <td style="background-color: #f8f9fa; padding: 20px 30px; text-align: center; border-top: 1px solid #e9ecef;">
-                      <p style="color: #999999; font-size: 12px; line-height: 1.6; margin: 0;">
-                        &copy; ${year} Lodgely. All rights reserved.
+                    <td style="background-color: #f7faf8; padding: 18px 30px; text-align: center; border-top: 1px solid #e4ece8;">
+                      <p style="color: #8eaaa0; font-size: 12px; line-height: 1.6; margin: 0;">
+                        &copy; ${year} Lodgely. Discover stays across Rwanda.
                       </p>
                     </td>
                   </tr>

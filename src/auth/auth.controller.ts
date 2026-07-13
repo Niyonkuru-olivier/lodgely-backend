@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Get,
+  Patch,
   Body,
   UseGuards,
   Request,
@@ -52,5 +53,20 @@ export class AuthController {
   @Get('profile')
   async getProfile(@Request() req: any) {
     return this.authService.getProfile(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('profile')
+  async updateProfile(
+    @Request() req: any,
+    @Body()
+    body: {
+      name?: string;
+      email?: string;
+      currentPassword?: string;
+      newPassword?: string;
+    },
+  ) {
+    return this.authService.updateProfile(req.user.id, body);
   }
 }

@@ -82,10 +82,18 @@ export class UsersService {
   }
 
   async getStats() {
-    const [totalUsers, totalAccommodations, availableAccommodations] = await Promise.all([
+    const [
+      totalUsers,
+      totalAccommodations,
+      availableAccommodations,
+      totalBookings,
+      pendingBookings,
+    ] = await Promise.all([
       this.prisma.user.count(),
       this.prisma.accommodation.count(),
       this.prisma.accommodation.count({ where: { availability: true } }),
+      this.prisma.booking.count(),
+      this.prisma.booking.count({ where: { status: 'pending' } }),
     ]);
 
     const adminCount = await this.prisma.user.count({ where: { role: 'admin' } });
@@ -97,6 +105,8 @@ export class UsersService {
       totalAccommodations,
       availableAccommodations,
       unavailableAccommodations: totalAccommodations - availableAccommodations,
+      totalBookings,
+      pendingBookings,
     };
   }
 }
